@@ -89,7 +89,6 @@ ENV/
 .ropeproject
 
 # Not committed specifications
-songs.json
 backend_test.txt
 
 # Vim temporay files

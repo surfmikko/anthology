@@ -1,5 +1,7 @@
 pytest
 pytest-xdist
-flask_restful
 pylint
 flake8
+flask_restful
+pymongo
+mongomock
