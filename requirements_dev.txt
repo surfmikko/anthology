@@ -1,0 +1,5 @@
+pytest
+pytest-xdist
+flask_restful
+pylint
+flake8
