@@ -1,6 +1,7 @@
 """MongoDB backend"""
 
-from pymongo import MongoClient
+from pymongo import MongoClient, ASCENDING
+from bson import ObjectId
 
 
 def connection():
@@ -21,7 +22,7 @@ def collection():
     return connection().anthology.songs
 
 
-def get_songs_list(skip, limit):
+def get_songs_list(previous_id, limit):
     """Return songs from database
 
     :offset: Number of items to skip
@@ -30,4 +31,9 @@ def get_songs_list(skip, limit):
 
     """
 
-    return collection().find(skip=skip, limit=limit)
+    query = {}
+
+    if previous_id:
+        query = {'_id': {'$gt': ObjectId(previous_id)}}
+
+    return collection().find(query).sort('_id', ASCENDING).limit(limit)

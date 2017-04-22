@@ -20,17 +20,26 @@ def test_response_200(client_fx, uri):
 
 
 def test_songs(response_fx):
-    """Detailed tests for /songs resource"""
+    """Test the /songs list"""
 
     response = response_fx('/songs')
 
     assert 'data' in response
     assert len(response["data"]) == 10
 
-    response = response_fx('/songs?limit=2')
-    assert len(response["data"]) == 2
-    assert response["data"][0]["title"] == "Lycanthropic Metamorphosis"
 
-    response = response_fx('/songs?limit=2&skip=2')
+def test_songs_iteration(response_fx):
+    """Test iteration of /songs list"""
+
+    response = response_fx('/songs?limit=2')
+    songs = response["data"]
     assert len(response["data"]) == 2
-    assert response["data"][0]["title"] == "Wishing In The Night"
+
+    assert '&' in response["next"]
+    assert '?' in response["next"]
+
+    for _ in range(6):
+        response = response_fx(response["next"])
+        songs = songs + response["data"]
+
+    assert len(songs) == 11
