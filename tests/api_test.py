@@ -26,3 +26,11 @@ def test_songs(response_fx):
 
     assert 'data' in response
     assert len(response["data"]) == 10
+
+    response = response_fx('/songs?limit=2')
+    assert len(response["data"]) == 2
+    assert response["data"][0]["title"] == "Lycanthropic Metamorphosis"
+
+    response = response_fx('/songs?limit=2&skip=2')
+    assert len(response["data"]) == 2
+    assert response["data"][0]["title"] == "Wishing In The Night"

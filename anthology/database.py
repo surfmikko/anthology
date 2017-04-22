@@ -29,4 +29,5 @@ def get_songs_list(skip, limit):
     :returns: Iterable cursor object
 
     """
+
     return collection().find(skip=skip, limit=limit)
