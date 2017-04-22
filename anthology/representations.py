@@ -5,9 +5,12 @@ from bson.json_util import dumps
 
 
 def output_bson(data, code, headers=None):
-    """Makes Flask response with a BSON encoded body
+    """Makes Flask response with a JSON encoded body.
 
-    Copied from module `flask_restful.representations.json`
+    Response items are serialized from MongoDB BSON objects to
+    JSON compatible format.
+
+    Modified from module `flask_restful.representations.json`
 
     """
 
