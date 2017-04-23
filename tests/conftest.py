@@ -5,6 +5,7 @@ import shutil
 import tempfile
 import subprocess
 import signal
+import logging
 
 from json import loads
 
@@ -13,9 +14,11 @@ import pytest
 import pymongo
 
 import anthology.database
-from anthology.database import db_songs
+from anthology.database import db_songs, db_averages
 from anthology.api import get_app
+from anthology.dbimport import import_json
 
+logging.basicConfig(loglevel=logging.debug)
 
 TEST_DB_PORT = 45684
 
@@ -106,6 +109,10 @@ def mongo_proc(request, _mkdtemp):
     mongodb = MongoProc(db_path)
     mongodb.start()
 
+    connection = pymongo.MongoClient(host="localhost:%s" % TEST_DB_PORT)
+
+    setattr(anthology.database, 'connection', lambda: connection)
+
     def _fin():
         """Shutdown database"""
         mongodb.kill()
@@ -114,16 +121,9 @@ def mongo_proc(request, _mkdtemp):
 
 
 @pytest.fixture(autouse=True, scope='function')
-def patch_database_fx(monkeypatch):
+def testdata_fx():
     """Use temporary MongoDB instance for testing"""
 
-    connection = pymongo.MongoClient(host="localhost:%s" % TEST_DB_PORT)
-
-    monkeypatch.setattr(
-        anthology.database, 'connection', lambda: connection)
-
     db_songs().remove()
-
-    with open('tests/data/songs.json') as infile:
-        for song_json in infile.readlines():
-            db_songs().insert(loads(song_json))
+    db_averages().remove()
+    import_json('tests/data/songs.json')

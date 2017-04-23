@@ -94,4 +94,5 @@ backend_test.txt
 # Vim temporay files
 *.sw?
 
-
+# temporary test data
+tmp/

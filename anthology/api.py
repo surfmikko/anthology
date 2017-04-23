@@ -8,9 +8,7 @@ from flask_restful.utils import OrderedDict
 
 import anthology.database as db
 from anthology.representations import output_bson
-
-
-SONGS = [{"_id": 1}, {"_id": 2}]
+from anthology.fields import ArbitaryFloat
 
 
 SONG_FIELDS = {
@@ -57,16 +55,57 @@ class SongList(Resource):
 
         songlist = [x for x in songs_list]
 
-        try:
-            last_id = songlist[-1]["_id"]
-        except IndexError:
-            last_id = None
-
         return {
             'data': songlist,
-            'next': url_for(
-                "songlist", previous_id=last_id, limit=self.args.limit)
+            'next': pagination_uri("songlist", songlist, self.args.limit)
         }
+
+
+def pagination_uri(endpoint, items, limit):
+    """Return paginated URL for given endpoint."""
+
+    if len(items) < limit:
+        return None
+
+    last_id = items[-1]["_id"]
+
+    return url_for(endpoint, previous_id=last_id, limit=limit)
+
+
+AVERAGE_FIELDS = {
+    "average_difficulty": ArbitaryFloat(2),
+    "level": fields.Integer(),
+    "algorithm": fields.String()
+}
+
+
+class AverageDifficulty(Resource):
+    """Songs resource."""
+
+    @property
+    def args(self):
+        """Parse and sanitize request arguments."""
+
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            'level', default=None,
+            type=int, help='Level of songs to get averages')
+        parser.add_argument(
+            'algorithm', type=str, help='Some fun averages?')
+        args = parser.parse_args()
+
+        return args
+
+    @marshal_with(AVERAGE_FIELDS)
+    def get(self):
+        """GET /songs"""
+
+        if self.args.algorithm == 'fun':
+            return db.get_average_difficulty_fun(
+                level=self.args.level)
+
+        return db.get_average_difficulty(
+            level=self.args.level)
 
 
 def get_app():
@@ -79,6 +118,7 @@ def get_app():
     api = Api(app)
 
     api.add_resource(SongList, '/songs')
+    api.add_resource(AverageDifficulty, '/songs/avg')
 
     api.representations = OrderedDict([
         ('application/json', output_bson)
