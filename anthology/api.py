@@ -139,6 +139,13 @@ RATING_FIELDS = {
 }
 
 
+def rating_value(value):
+    """Check that given value is integer and between 1 and 5."""
+    if 1 <= int(value) <= 5:
+        return int(value)
+    raise ValueError("Expected rating between 1 and 5, but got %s" % value)
+
+
 class Rating(ParameterResource):
     """Ratings for songs"""
 
@@ -146,7 +153,7 @@ class Rating(ParameterResource):
         """Song rating gets single parameter `rating`"""
 
         parser.add_argument(
-            'rating', type=int, help='New rating for the song')
+            'rating', type=rating_value)
 
         return parser
 

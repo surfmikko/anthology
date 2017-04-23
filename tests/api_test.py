@@ -134,6 +134,8 @@ def test_rating(response_fx, client_fx):
     """GET /songs/rating/<id>
     POST /songs/rating/<id>
 
+    Test good rating values.
+
     """
     response = response_fx('/songs')
     song = response["data"][0]
@@ -149,3 +151,21 @@ def test_rating(response_fx, client_fx):
     rating = response_fx(song["rating_url"])
     assert rating["rating"] == 1
 
+
+def test_rating_invalid(response_fx, client_fx):
+    """POST /songs/rating/<id>
+
+    Test invalid rating values.
+
+    """
+    response = response_fx('/songs')
+    song = response["data"][0]
+    assert song["rating"] == 5
+
+    response = client_fx.post(song["rating_url"], data={'rating': 0})
+    message = loads(response.data)
+    assert response.status_code == 400
+    assert '1 and 5' in message["message"]["rating"]
+
+    rating = response_fx(song["rating_url"])
+    assert rating["rating"] == 5
