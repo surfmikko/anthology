@@ -6,14 +6,17 @@ Anthology is a RESTful API for querying songs database.
 
 ## Installing required libraries
 
-Anthology requires recent version of MongoDB running:
+Anthology requires recent version of MongoDB running and some Python libraries. It has been tested on Centos 7.3 /
+mongodb-org-server 3.4.4.
+
+Install and start MongoDB server:
 
 ```shell
 sudo yum -y install mongodb-org-server
 sudo service mongod start
 ```
 
-Python requirements can be installed in virtualenv environment with pip:
+Python requirements can be installed with virtualenv and pip:
 
 ```shell
 virtualenv venv
@@ -84,7 +87,5 @@ Try out API with some example curl commands:
   ```
 
 ## Known issues
-
-Anthology has been tested with Python 2.7 and MongoDB 3.4.4.
 
   * Old versions of MongoDB have unresolved issues with text indexes (2.4/2.6)
