@@ -22,6 +22,15 @@ def test_response_200(client_fx, uri):
     assert isinstance(loads(response.data), dict)
 
 
+@pytest.mark.parametrize("uri", [
+    '/', '/songs/rating', '/sogs'])
+def test_404(client_fx, uri):
+    """Test that API return correct HTTP 404 responses"""
+    response = client_fx.get(uri)
+    assert response.status_code == 404
+    assert isinstance(loads(response.data), dict)
+
+
 def test_songs(response_fx):
     """Test the /songs list"""
 
@@ -139,3 +148,4 @@ def test_rating(response_fx, client_fx):
 
     rating = response_fx(song["rating_url"])
     assert rating["rating"] == 1
+

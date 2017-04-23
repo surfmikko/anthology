@@ -169,7 +169,7 @@ def get_app():
     """
 
     app = Flask(__name__)
-    api = Api(app)
+    api = Api(app, catch_all_404s=True)
 
     api.add_resource(SongList, '/songs')
     api.add_resource(SongSearch, '/songs/search')
