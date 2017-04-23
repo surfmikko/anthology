@@ -18,8 +18,9 @@ SONG_FIELDS = {
     "difficulty": fields.Float(),
     "level": fields.String(),
     "released": fields.String(),
+    "rating": fields.Integer(),
+    "rating_url": fields.Url('song_rating')
 }
-
 
 SONGLIST_FIELDS = {
     "data": fields.List(fields.Nested(SONG_FIELDS)),
@@ -132,6 +133,35 @@ class AverageDifficulty(ParameterResource):
             level=self.args.level)
 
 
+RATING_FIELDS = {
+    "id": fields.String(attribute=lambda x: x["_id"]),
+    "rating": fields.Integer()
+}
+
+
+class Rating(ParameterResource):
+    """Ratings for songs"""
+
+    def add_arguments(self, parser):
+        """Song rating gets single parameter `rating`"""
+
+        parser.add_argument(
+            'rating', type=int, help='New rating for the song')
+
+        return parser
+
+    @marshal_with(RATING_FIELDS)
+    def get(self, _id):
+        """Return rating for single song"""
+        return db.get_song(_id)
+
+    @marshal_with(RATING_FIELDS)
+    def post(self, _id):
+        """Set rating for given `song_id`"""
+        db.update_song(_id, {'rating': self.args.rating})
+        return db.get_song(_id)
+
+
 def get_app():
     """Configure main application.
 
@@ -144,6 +174,8 @@ def get_app():
     api.add_resource(SongList, '/songs')
     api.add_resource(SongSearch, '/songs/search')
     api.add_resource(AverageDifficulty, '/songs/avg')
+    api.add_resource(
+        Rating, '/songs/rating/<string:_id>', endpoint='song_rating')
 
     api.representations = OrderedDict([
         ('application/json', output_bson)

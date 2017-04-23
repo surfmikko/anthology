@@ -4,6 +4,11 @@ from pymongo import MongoClient, ASCENDING
 from bson import ObjectId
 
 
+class DatabaseError(Exception):
+    """Raised for unrecoverable database errors"""
+    pass
+
+
 def connection():
     """Return MongoClient connection object.
 
@@ -146,3 +151,15 @@ def get_average_difficulty_fun(level):
         'level': level,
         'average_difficulty': average_difficulty,
         'algorithm': 'fun'}
+
+
+def get_song(song_id):
+    """Return song with given id"""
+    return db_songs().find_one({'_id': ObjectId(song_id)})
+
+
+def update_song(song_id, fields):
+    """Return song with given id"""
+    result = db_songs().update({'_id': ObjectId(song_id)}, fields)
+    if result["nModified"] != 1:
+        raise DatabaseError('Rating update failed: %s' % str(result))

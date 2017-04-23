@@ -119,3 +119,23 @@ def test_search_word(response_fx):
 
     response = response_fx('/songs/search?word=ing')
     assert response["data"] == []
+
+
+def test_rating(response_fx, client_fx):
+    """GET /songs/rating/<id>
+    POST /songs/rating/<id>
+
+    """
+    response = response_fx('/songs')
+    song = response["data"][0]
+    assert song["rating"] == 5
+
+    rating = response_fx(song["rating_url"])
+    assert rating["rating"] == 5
+
+    response = client_fx.post(song["rating_url"], data={'rating': 1})
+    rating = loads(response.data)
+    assert rating["rating"] == 1
+
+    rating = response_fx(song["rating_url"])
+    assert rating["rating"] == 1
