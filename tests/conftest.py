@@ -109,9 +109,11 @@ def mongo_proc(request, _mkdtemp):
     mongodb = MongoProc(db_path)
     mongodb.start()
 
-    connection = pymongo.MongoClient(host="localhost:%s" % TEST_DB_PORT)
+    def _connection():
+        """Return connection to test database"""
+        return pymongo.MongoClient(host="localhost:%s" % TEST_DB_PORT)
 
-    setattr(anthology.database, 'connection', lambda: connection)
+    setattr(anthology.database, 'connection', _connection)
 
     def _fin():
         """Shutdown database"""
@@ -120,6 +122,7 @@ def mongo_proc(request, _mkdtemp):
     request.addfinalizer(_fin)
 
 
+@pytest.mark.usefixtures('mongo_proc')
 @pytest.fixture(autouse=True, scope='function')
 def testdata_fx():
     """Use temporary MongoDB instance for testing"""
