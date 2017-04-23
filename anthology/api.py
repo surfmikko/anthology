@@ -1,13 +1,9 @@
 """RESTful API for songs database"""
 
-from bson.json_util import dumps
-
 from flask import Flask, url_for
 from flask_restful import Api, Resource, reqparse, fields, marshal_with
-from flask_restful.utils import OrderedDict
 
 import anthology.database as db
-from anthology.representations import output_bson
 from anthology.fields import ArbitaryFloat, Integer
 
 
@@ -30,6 +26,10 @@ SONGLIST_FIELDS = {
 
 class ParameterResource(Resource):
     """Resource with HTTP request parameter handling"""
+
+    def add_arguments(self, parser):
+        """Add URL parameters for the resource"""
+        raise NotImplementedError("Remember to override this")
 
     @property
     def args(self):
@@ -74,7 +74,7 @@ class SongList(ParameterResource):
         songlist = list(results)
 
         pagination = pagination_uri(
-            endpoint=self.endpoint,
+            endpoint=getattr(self, 'endpoint'),
             items=songlist,
             limit=self.args.limit,
             message=self.args.message,
@@ -92,7 +92,7 @@ class SongSearch(SongList):
 def pagination_uri(endpoint, items, limit, **kwargs):
     """Return paginated URL for given endpoint."""
 
-    if len(items) == 0:
+    if items == []:
         return None
 
     last_id = items[-1]["_id"]
@@ -176,10 +176,6 @@ def get_app():
     api.add_resource(AverageDifficulty, '/songs/avg')
     api.add_resource(
         Rating, '/songs/rating/<string:_id>', endpoint='song_rating')
-
-    api.representations = OrderedDict([
-        ('application/json', output_bson)
-    ])
 
     return app
 

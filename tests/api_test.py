@@ -8,7 +8,7 @@ from anthology.aggregate import calculate_totals
 
 
 @pytest.mark.parametrize('uri', [
-    '/songs'])
+    '/songs', '/songs/avg', '/songs/search'])
 def test_response_200(client_fx, uri):
     """All given `uri` should return valid HTTP 200 OK response.
 
