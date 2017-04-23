@@ -58,3 +58,9 @@ Trying out more API requests:
   curl http://localhost:5000/songs/rating/<id>
   curl http://localhost:5000/songs/rating/<id> --data 'rating=5'
   ```
+
+## Known issues
+
+Anthology has been tested with Python 2.7 and MongoDB 3.4.4.
+
+  * Old versions of MongoDB have unresolved issues with text indexes (2.4/2.6)
