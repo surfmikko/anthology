@@ -1,5 +1,6 @@
 pytest
 pytest-xdist
+codecov
 pylint
 flake8
 flask_restful
