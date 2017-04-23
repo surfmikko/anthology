@@ -46,7 +46,9 @@ With configured environment test server can be started with command:
 
 Test the API in other terminal with curl:
 
+  ```shell
   curl http://localhost:5000/songs
+  ```
 
 ## Importing data
 
