@@ -1,8 +1,8 @@
 # Anthology
 
 [![Build Status](https://travis-ci.org/surfmikko/anthology.svg?branch=master)](https://travis-ci.org/surfmikko/anthology) 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Codecov branch](https://img.shields.io/codecov/c/github/surfmikko/anthology/master.svg)](https://codecov.io/gh/surfmikko/anthology)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 
 Anthology is a RESTful API for querying songs database.
