@@ -9,5 +9,5 @@ services:
 install: "pip install -r requirements_dev.txt"
 script: py.test -svvv tests --skip-text-index
 after_script:
-  - coverage run --include='tests*','anthology*' -m pytest tests --skip-text-index"
+  - coverage run --include='tests*','anthology*' -m pytest tests --skip-text-index
   - codecov
