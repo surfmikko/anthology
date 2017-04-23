@@ -43,10 +43,15 @@ Calculating aggregates from JSON file:
 Trying out more API requests:
 
   ```shell
-  curl http://localhost:5000/songs/avg
+  curl http://localhost:5000/songs?limit=3&previous_id=<id>
+
   curl http://localhost:5000/songs/avg?level=9
   curl http://localhost:5000/songs/avg?algorithm=fun
+
   curl http://localhost:5000/songs/search?message=night
   curl http://localhost:5000/songs/search?message=me
   curl http://localhost:5000/songs/search?word=me
+
+  curl http://localhost:5000/songs/rating/<id>
+  curl http://localhost:5000/songs/rating/<id> --data 'rating=5'
   ```

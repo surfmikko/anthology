@@ -26,5 +26,23 @@ class ArbitaryFloat(fields.Raw):
         """Return truncated float value"""
         try:
             return round(float(value), self.precision)
-        except ValueError as exception:
-            raise MarshallingException(exception)
+        except ValueError as error:
+            raise MarshallingException(error)
+
+
+class Integer(fields.Raw):
+    """ Field for outputting an integer value. This allows also None values for
+    integer.
+
+    Modified from flask_restful.fields.Integer.
+
+    :param int default: The default value for the field, if no value is
+        specified.
+    """
+    def format(self, value):
+        try:
+            if value is None:
+                return None
+            return int(value)
+        except ValueError as error:
+            raise MarshallingException(error)

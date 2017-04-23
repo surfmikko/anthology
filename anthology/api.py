@@ -8,7 +8,7 @@ from flask_restful.utils import OrderedDict
 
 import anthology.database as db
 from anthology.representations import output_bson
-from anthology.fields import ArbitaryFloat
+from anthology.fields import ArbitaryFloat, Integer
 
 
 SONG_FIELDS = {
@@ -18,7 +18,7 @@ SONG_FIELDS = {
     "difficulty": fields.Float(),
     "level": fields.String(),
     "released": fields.String(),
-    "rating": fields.Integer(),
+    "rating": Integer(),
     "rating_url": fields.Url('song_rating')
 }
 
@@ -102,7 +102,7 @@ def pagination_uri(endpoint, items, limit, **kwargs):
 
 AVERAGE_FIELDS = {
     "average_difficulty": ArbitaryFloat(2),
-    "level": fields.Integer(),
+    "level": Integer(),
     "algorithm": fields.String()
 }
 
@@ -135,7 +135,7 @@ class AverageDifficulty(ParameterResource):
 
 RATING_FIELDS = {
     "id": fields.String(attribute=lambda x: x["_id"]),
-    "rating": fields.Integer()
+    "rating": Integer()
 }
 
 
