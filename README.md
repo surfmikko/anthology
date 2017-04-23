@@ -4,7 +4,16 @@
 
 Anthology is a RESTful API for querying songs database.
 
-Use virtualenv to setup required Python libraries:
+## Installing required libraries
+
+Anthology requires recent version of MongoDB running:
+
+```shell
+sudo yum -y install mongodb-org-server
+sudo service mongod start
+```
+
+Python requirements can be installed in virtualenv environment with pip:
 
 ```shell
 virtualenv venv
@@ -13,37 +22,50 @@ pip install -r requirements_dev.txt
 export PYTHONPATH=.
 ```
 
+## Running tests
+
 Use pytest for tests with stand-alone database:
 
   ```shell
   py.test -sv tests
   ```
 
-Running test server::
+If you have older MongoDB try skipping tests with text indexes:
+
+```shell
+py.test -sv tests --skip-text-index
+```
+
+## Running test service
+
+With configured environment test server can be started with command:
 
   ```shell
   python anthology/api.py
   ```
 
-Trying out API with curl:
+Test the API in other terminal with curl:
 
-  ```shell
   curl http://localhost:5000/songs
-  ```
 
-Importing data from JSON file into songs database:
+## Importing data
+
+For successful requests we need some data. Import provided test dataset with
+command:
 
   ```shell
   python -m anthology.dbimport tests/data/songs.json
   ```
 
-Calculating aggregates from JSON file:
-
+For experimental / just for fun averaging feature you can import aggregated dataset with command:
+ 
   ```shell
   luigi --module anthology.aggregate RunTotals --local-scheduler
   ```
 
-Trying out more API requests:
+## Usage examples
+
+Try out API with some example curl commands:
 
   ```shell
   curl http://localhost:5000/songs?limit=3&previous_id=<id>
