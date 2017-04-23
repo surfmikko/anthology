@@ -115,6 +115,7 @@ def test_search_iteration(response_fx):
     assert len(response["data"]) == 1
 
 
+@pytest.mark.text_index
 def test_search_word(response_fx):
     """GET /songs/search?word=
 

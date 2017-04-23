@@ -1,4 +1,7 @@
 # Anthology
+
+[![Build Status](https://travis-ci.org/surfmikko/anthology.svg?branch=master)](https://travis-ci.org/surfmikko/anthology) 
+
 Anthology is a RESTful API for querying songs database.
 
 Use virtualenv to setup required Python libraries:

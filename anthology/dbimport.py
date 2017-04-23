@@ -8,7 +8,7 @@ from pymongo import TEXT
 from anthology.database import db_songs
 
 
-def import_json(filename):
+def import_json(filename, text_index=True):
     """Import data from JSON file.
 
     File must contain single dictionary on single row for each song.
@@ -31,7 +31,8 @@ def import_json(filename):
         ('title', TEXT),
         ('artist', TEXT)]
 
-    db_songs().create_index(index_fields, default_language='none')
+    if text_index:
+        db_songs().create_index(index_fields, default_language='none')
 
 
 if __name__ == "__main__":
