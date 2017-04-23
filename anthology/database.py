@@ -163,6 +163,4 @@ def update_song(song_id, fields):
     result = db_songs().update_one(
         {'_id': ObjectId(song_id)},
         {'$set': fields})
-
-    if result.modified_count != 1 or result.matched_count != 1:
-        raise DatabaseError('Rating update failed: %s' % str(result))
+    print result
