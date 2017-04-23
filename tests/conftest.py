@@ -15,8 +15,8 @@ import pymongo
 
 import anthology.database
 from anthology.database import db_songs, db_averages
-from anthology.api import get_app
 from anthology.dbimport import import_json
+from anthology.api import get_app
 
 logging.basicConfig(loglevel=logging.debug)
 

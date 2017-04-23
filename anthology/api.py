@@ -27,49 +27,76 @@ SONGLIST_FIELDS = {
 }
 
 
-class SongList(Resource):
-    """Songs resource."""
+class ParameterResource(Resource):
+    """Resource with HTTP request parameter handling"""
 
     @property
     def args(self):
-        """Parse and sanitize request arguments."""
-
+        """Return request parameters as dictionary"""
         parser = reqparse.RequestParser()
+        self.add_arguments(parser)
+        return parser.parse_args()
+
+
+class SongList(ParameterResource):
+    """Songs resource."""
+
+    def add_arguments(self, parser):
+        """Parameters for the resource"""
+
         parser.add_argument(
             'limit', default=10, type=int, help='Number of items to return')
         parser.add_argument(
             'previous_id', type=str, help="Return items after this item")
-        args = parser.parse_args()
+        parser.add_argument(
+            'message', default=None,
+            type=str, help='Search term (partial word)')
+        parser.add_argument(
+            'word', default=None,
+            type=str, help='Search term (full word)')
 
-        if args.limit > 100:
-            args.limit = 100
-
-        return args
+        return parser
 
     @marshal_with(SONGLIST_FIELDS)
     def get(self):
         """GET /songs"""
 
-        songs_list = db.get_songs_list(
-            previous_id=self.args.previous_id, limit=self.args.limit)
+        if self.args.limit > 100:
+            self.args.limit = 100
 
-        songlist = [x for x in songs_list]
+        results = db.get_songs_list(
+            previous_id=self.args.previous_id,
+            limit=self.args.limit,
+            search_term=self.args.message,
+            search_word=self.args.word)
 
-        return {
-            'data': songlist,
-            'next': pagination_uri("songlist", songlist, self.args.limit)
-        }
+        songlist = list(results)
+
+        pagination = pagination_uri(
+            endpoint=self.endpoint,
+            items=songlist,
+            limit=self.args.limit,
+            message=self.args.message,
+            word=self.args.word)
+
+        return {'data': songlist, 'next': pagination}
 
 
-def pagination_uri(endpoint, items, limit):
+class SongSearch(SongList):
+    """Flask Restful seems to require separate class for each route. Routing
+    same class to different routes causes AssertionError."""
+    pass
+
+
+def pagination_uri(endpoint, items, limit, **kwargs):
     """Return paginated URL for given endpoint."""
 
-    if len(items) < limit:
+    if len(items) == 0:
         return None
 
     last_id = items[-1]["_id"]
 
-    return url_for(endpoint, previous_id=last_id, limit=limit)
+    return url_for(endpoint, previous_id=last_id, limit=limit, **kwargs)
 
 
 AVERAGE_FIELDS = {
@@ -79,22 +106,19 @@ AVERAGE_FIELDS = {
 }
 
 
-class AverageDifficulty(Resource):
+class AverageDifficulty(ParameterResource):
     """Songs resource."""
 
-    @property
-    def args(self):
+    def add_arguments(self, parser):
         """Parse and sanitize request arguments."""
 
-        parser = reqparse.RequestParser()
         parser.add_argument(
             'level', default=None,
             type=int, help='Level of songs to get averages')
         parser.add_argument(
             'algorithm', type=str, help='Some fun averages?')
-        args = parser.parse_args()
 
-        return args
+        return parser
 
     @marshal_with(AVERAGE_FIELDS)
     def get(self):
@@ -118,6 +142,7 @@ def get_app():
     api = Api(app)
 
     api.add_resource(SongList, '/songs')
+    api.add_resource(SongSearch, '/songs/search')
     api.add_resource(AverageDifficulty, '/songs/avg')
 
     api.representations = OrderedDict([

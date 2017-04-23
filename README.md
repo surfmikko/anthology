@@ -46,4 +46,7 @@ Trying out more API requests:
   curl http://localhost:5000/songs/avg
   curl http://localhost:5000/songs/avg?level=9
   curl http://localhost:5000/songs/avg?algorithm=fun
+  curl http://localhost:5000/songs/search?message=night
+  curl http://localhost:5000/songs/search?message=me
+  curl http://localhost:5000/songs/search?word=me
   ```

@@ -26,20 +26,50 @@ def db_averages():
     return connection().anthology.averages
 
 
-def get_songs_list(previous_id, limit):
-    """Return songs from database
+def get_songs_list(previous_id, limit, search_term=None, search_word=None):
+    """Return songs from database. Parameters `previous_id` and `limit` are
+    used to iterate over result set.
+
+    Search is performed using parameter `search_term`. This performs search
+    on text index for documents. Index is always required and without it search
+    will fail.
 
     :offset: Number of items to skip
     :limit: Number of returned items
+    :search_term: Partial word search term
+    :search_word: Full word search term
     :returns: Iterable cursor object
 
     """
 
-    query = {}
+    query = [{}]
+
+    # Search for partial words
+    if search_term:
+        search = {'$text': {
+            '$search': search_term,
+            '$language': 'none',
+            '$caseSensitive': False,
+            '$diacriticSensitive': False
+        }}
+
+        regex = {'$regex': search_term, '$options': 'i'}
+        query.append({'$or': [{'title': regex}, {'artist': regex}]})
+
+    # Search for full words
+    if search_word:
+        search = {'$text': {
+            '$search': search_word,
+            '$language': 'none',
+            '$caseSensitive': False,
+            '$diacriticSensitive': False
+        }}
+        query.append(search)
 
     if previous_id:
-        query = {'_id': {'$gt': ObjectId(previous_id)}}
-    return db_songs().find(query).sort('_id', ASCENDING).limit(limit)
+        query.append({'_id': {'$gt': ObjectId(previous_id)}})
+
+    return db_songs().find({'$and': query}).sort('_id', ASCENDING).limit(limit)
 
 
 def get_average_difficulty(level):
@@ -103,7 +133,7 @@ def get_average_difficulty_fun(level):
     number_of_songs = 0
 
     for total in filter_songs_by_level(totals, level):
-        # BUGBUG: This will overflow
+        # BUGBUG: This will overflow with big dataset
         total_difficulty += total["total_difficulty"]
         number_of_songs += total["number_of_songs"]
 

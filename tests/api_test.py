@@ -70,3 +70,52 @@ def test_average_difficulty(response_fx):
     response = response_fx('/songs/avg?algorithm=fun')
     assert response["average_difficulty"] == 10.32
     assert response["algorithm"] == 'fun'
+
+
+def test_search(response_fx):
+    """GET /songs/search?message="""
+
+    response = response_fx('/songs/search?message=fastfinger')
+    assert len(response["data"]) == 1
+    assert response["data"][0]["title"] == 'Awaki-Waki'
+
+    response = response_fx('/songs/search?message=waki')
+    assert len(response["data"]) == 1
+    assert response["data"][0]["artist"] == 'Mr Fastfinger'
+
+
+def test_search_iteration(response_fx):
+    """GET /songs/search?message=&limit=
+
+    Test iteration over search results.
+
+    """
+
+    response = response_fx('/songs/search?message=ing')
+    assert len(response["data"]) == 4
+    assert response["data"][0]["artist"] == 'Mr Fastfinger'
+
+    response = response_fx('/songs/search?message=ing&limit=3')
+    assert len(response["data"]) == 3
+
+    assert 'message' in response["next"]
+    assert 'limit' in response["next"]
+    assert 'previous_id' in response["next"]
+
+    response = response_fx(response["next"])
+    assert len(response["data"]) == 1
+
+
+def test_search_word(response_fx):
+    """GET /songs/search?word=
+
+    Word search searches only full word. Partial matches should not return any
+    result.
+
+    """
+
+    response = response_fx('/songs/search?word=the')
+    assert len(response["data"]) == 10
+
+    response = response_fx('/songs/search?word=ing')
+    assert response["data"] == []

@@ -1,8 +1,9 @@
 """Import data to songs database"""
 
 import sys
-
 from json import loads
+
+from pymongo import TEXT
 
 from anthology.database import db_songs
 
@@ -25,6 +26,12 @@ def import_json(filename):
     with open(filename) as infile:
         for song_json in infile.readlines():
             db_songs().insert(loads(song_json))
+
+    index_fields = [
+        ('title', TEXT),
+        ('artist', TEXT)]
+
+    db_songs().create_index(index_fields, default_language='none')
 
 
 if __name__ == "__main__":
