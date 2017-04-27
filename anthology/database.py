@@ -51,13 +51,6 @@ def get_songs_list(previous_id, limit, search_term=None, search_word=None):
 
     # Search for partial words
     if search_term:
-        search = {'$text': {
-            '$search': search_term,
-            '$language': 'none',
-            '$caseSensitive': False,
-            '$diacriticSensitive': False
-        }}
-
         regex = {'$regex': search_term, '$options': 'i'}
         query.append({'$or': [{'title': regex}, {'artist': regex}]})
 
