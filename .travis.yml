@@ -4,7 +4,7 @@ python:
 cache: pip
 services:
   - mongodb
-install: "pip install -r requirements_dev.txt"
+install: "pip install --upgrade -r requirements_dev.txt"
 script: PYTHONPATH=. py.test -svvv tests --skip-text-index
 after_script:
   - PYTHONPATH=. coverage run --include='tests*','anthology*' -m pytest tests --skip-text-index
